@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Plan module."""
+import os
 from hashlib import sha384
 from importlib import import_module
 from logging import getLogger
@@ -246,10 +247,13 @@ class Plan:
         if self.config['network'][SETTINGS]['agg_addr'] == AUTO:
             self.config['network'][SETTINGS]['agg_addr'] = getfqdn_env()
 
-        if self.config['network'][SETTINGS]['agg_port'] == AUTO:
-            self.config['network'][SETTINGS]['agg_port'] = int(
-                self.hash[:8], 16
-            ) % (60999 - 49152) + 49152
+        if "FL_PUBLIC_PORTS" in os.environ.keys() and os.environ["FL_PUBLIC_PORTS"]:
+            self.config['network'][SETTINGS]['agg_port'] = 80
+        else:
+            if self.config['network'][SETTINGS]['agg_port'] == AUTO:
+                self.config['network'][SETTINGS]['agg_port'] = int(
+                    self.hash[:8], 16
+                ) % (60999 - 49152) + 49152
 
     def get_assigner(self):
         """Get the plan task assigner."""
@@ -519,7 +523,6 @@ class Plan:
         server_args['private_key'] = private_key
 
         server_args['aggregator'] = self.get_aggregator()
-
         if self.server_ is None:
             self.server_ = AggregatorGRPCServer(**server_args)
 

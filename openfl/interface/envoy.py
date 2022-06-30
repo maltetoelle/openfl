@@ -89,8 +89,10 @@ def start_(shard_name, director_host, director_port, tls, envoy_config_path,
                                 f'for plugin {plugin_name}')
             module_path, _, class_name = template.rpartition('.')
             plugin_params = plugin_settings.get('params', {})
-
-            module = import_module(module_path)
+            try:
+                module = import_module(module_path)
+            except:
+                import pdb;pdb.set_trace()
             instance = getattr(module, class_name)(**plugin_params)
             envoy_params[plugin_name] = instance
 

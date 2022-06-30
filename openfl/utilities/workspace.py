@@ -37,23 +37,23 @@ class ExperimentWorkspace:
     def _install_requirements(self):
         """Install experiment requirements."""
         requirements_filename = f'{self.experiment_work_dir}/requirements.txt'
-
-        if os.path.isfile(requirements_filename):
-            attempts = 10
-            for _ in range(attempts):
-                try:
-                    check_call([
-                        executable, '-m', 'pip', 'install', '-r', requirements_filename],
-                        shell=False)
-                except Exception as exc:
-                    logger.error(f'Failed to install requirements: {exc}')
-                    # It's a workaround for cases when collaborators run
-                    # in common virtual environment
-                    time.sleep(5)
-                else:
-                    break
-        else:
-            logger.error('No ' + requirements_filename + ' file found.')
+        logger.info("skipping installing requirements...")
+        # if os.path.isfile(requirements_filename):
+        #     attempts = 10
+        #     for _ in range(attempts):
+        #         try:
+        #             check_call([
+        #                 executable, '-m', 'pip', 'install', '-r', requirements_filename],
+        #                 shell=False)
+        #         except Exception as exc:
+        #             logger.error(f'Failed to install requirements: {exc}')
+        #             # It's a workaround for cases when collaborators run
+        #             # in common virtual environment
+        #             time.sleep(5)
+        #         else:
+        #             break
+        # else:
+        #     logger.error('No ' + requirements_filename + ' file found.')
 
     def __enter__(self):
         """Create a collaborator workspace for the experiment."""

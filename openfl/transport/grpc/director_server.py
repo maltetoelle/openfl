@@ -97,6 +97,7 @@ class DirectorGRPCServer(director_pb2_grpc.DirectorServicer):
         director_pb2_grpc.add_DirectorServicer_to_server(self, self.server)
 
         if not self.tls:
+            print(self.listen_uri)
             self.server.add_insecure_port(self.listen_uri)
         else:
             with open(self.private_key, 'rb') as f:
