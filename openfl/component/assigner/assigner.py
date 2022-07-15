@@ -72,4 +72,4 @@ class Assigner:
                 return None
             return self.tasks[task_name]['aggregation_type']
         except:
-            import pdb;pdb.set_trace()
+           return None

@@ -241,7 +241,6 @@ class Collaborator:
         if hasattr(self.task_runner, 'TASK_REGISTRY'):
             # New interactive python API
             # New `Core` TaskRunner contains registry of tasks
-            import pdb;pdb.set_trace()
             func = self.task_runner.TASK_REGISTRY[func_name]
             # except:
             #     import pdb;pdb.set_trace()
