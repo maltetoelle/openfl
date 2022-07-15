@@ -187,6 +187,14 @@ class Collaborator:
         if hasattr(self.task_runner, 'TASK_REGISTRY'):
             func_name = task.function_name
             task_name = task.name
+
+            if not len(func_name):
+                if 'val' in task_name:
+                    func_name = 'validate'
+                    task.task_type = 'validate'
+                elif 'train' in task_name:
+                    func_name = 'train'
+
             kwargs = {}
             if task.task_type == 'validate':
                 if task.apply_local:
@@ -233,7 +241,10 @@ class Collaborator:
         if hasattr(self.task_runner, 'TASK_REGISTRY'):
             # New interactive python API
             # New `Core` TaskRunner contains registry of tasks
+            import pdb;pdb.set_trace()
             func = self.task_runner.TASK_REGISTRY[func_name]
+            # except:
+            #     import pdb;pdb.set_trace()
             self.logger.info('Using Interactive Python API')
 
             # So far 'kwargs' contained parameters read from the plan
