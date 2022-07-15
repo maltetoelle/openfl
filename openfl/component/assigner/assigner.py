@@ -67,6 +67,9 @@ class Assigner:
 
     def get_aggregation_type_for_task(self, task_name):
         """Extract aggregation type from self.tasks."""
-        if 'aggregation_type' not in self.tasks[task_name]:
-            return None
-        return self.tasks[task_name]['aggregation_type']
+        try:
+            if 'aggregation_type' not in self.tasks[task_name]:
+                return None
+            return self.tasks[task_name]['aggregation_type']
+        except:
+            import pdb;pdb.set_trace()
