@@ -163,11 +163,14 @@ class TensorDB:
                          for col_name in collaborator_names]
 
         db_iterator = self._iterate()
-        agg_nparray = aggregation_function(local_tensors,
-                                           db_iterator,
-                                           tensor_name,
-                                           fl_round,
-                                           tags)
+        try:
+            agg_nparray = aggregation_function(local_tensors,
+                                               db_iterator,
+                                               tensor_name,
+                                               fl_round,
+                                               tags)
+        except:
+            import pdb;pdb.set_trace()
         self.cache_tensor({tensor_key: agg_nparray})
 
         return np.array(agg_nparray)

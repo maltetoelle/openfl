@@ -310,7 +310,7 @@ class Aggregator:
             f'Sending tasks to collaborator {collaborator_name} for round {self.round_number}'
         )
         sleep_time = 0
-
+        #import pdb;pdb.set_trace()
         return tasks, self.round_number, sleep_time, time_to_quit
 
     def get_aggregated_tensor(self, collaborator_name, tensor_name,
@@ -785,20 +785,21 @@ class Aggregator:
             new_tags = tuple(tags[:-1])
             agg_tensor_key = TensorKey(tensor_name, origin, round_number, report, new_tags)
             agg_tensor_name, agg_origin, agg_round_number, agg_report, agg_tags = agg_tensor_key
-            agg_function = WeightedAverage() if 'metric' in tags else task_agg_function
+            agg_function = WeightedAverage() if 'metric' in tags or task_agg_function is None else task_agg_function
             agg_results = self.tensor_db.get_aggregated_tensor(
                 agg_tensor_key, collaborator_weight_dict, aggregation_function=agg_function)
             if report:
                 # Print the aggregated metric
-                try:
-                    metric_dict = {
-                        'metric_origin': 'Aggregator',
-                        'task_name': task_name,
-                        'metric_name': tensor_key.tensor_name,
-                        'metric_value': agg_results.item(),
-                        'round': round_number}
-                except:
-                    import pdb;pdb.set_trace()
+
+                if type(agg_results) == tuple:
+                    agg_results = agg_results[0]
+
+                metric_dict = {
+                    'metric_origin': 'Aggregator',
+                    'task_name': task_name,
+                    'metric_name': tensor_key.tensor_name,
+                    'metric_value': agg_results.item(),
+                    'round': round_number}
 
                 if agg_results is None:
                     self.logger.warning(
