@@ -81,12 +81,21 @@ class AggregatorGRPCServer(aggregator_pb2_grpc.AggregatorServicer):
             common_name = context.auth_context()[
                 'x509_common_name'][0].decode('utf-8')
             collaborator_common_name = request.header.sender
-            import pdb;pdb.set_trace()
-            if not self.aggregator.valid_collaborator_cn_and_id(
-                    common_name, collaborator_common_name):
-                raise ValueError(
-                    f'Invalid collaborator. CN: |{common_name}| '
-                    f'collaborator_common_name: |{collaborator_common_name}|')
+            try:
+                if not self.aggregator.valid_collaborator_cn_and_id(
+                       common_name, collaborator_common_name):
+                   raise ValueError(
+                       f'Invalid collaborator. CN: |{common_name}| '
+                       f'collaborator_common_name: |{collaborator_common_name}|')
+            except:
+                import subprocess
+                command = f'step certificate verify ~/certs/{collaborator_common_name}.crt --roots ~/certs/root_ca.crt'
+                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                out, err = process.communicate()
+                if len(err):
+                    raise ValueError(
+                        f'Invalid collaborator. CN: |{common_name}| '
+                        f'collaborator_common_name: |{collaborator_common_name}|')
 
     def get_header(self, collaborator_name):
         """
