@@ -790,12 +790,15 @@ class Aggregator:
                 agg_tensor_key, collaborator_weight_dict, aggregation_function=agg_function)
             if report:
                 # Print the aggregated metric
-                metric_dict = {
-                    'metric_origin': 'Aggregator',
-                    'task_name': task_name,
-                    'metric_name': tensor_key.tensor_name,
-                    'metric_value': agg_results.item(),
-                    'round': round_number}
+                try:
+                    metric_dict = {
+                        'metric_origin': 'Aggregator',
+                        'task_name': task_name,
+                        'metric_name': tensor_key.tensor_name,
+                        'metric_value': agg_results.item(),
+                        'round': round_number}
+                except:
+                    import pdb;pdb.set_trace()
 
                 if agg_results is None:
                     self.logger.warning(
