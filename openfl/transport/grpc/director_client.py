@@ -29,6 +29,7 @@ class ShardDirectorClient:
                  root_certificate=None, private_key=None, certificate=None) -> None:
         """Initialize a shard director client object."""
         self.shard_name = shard_name
+
         director_addr = f'{director_host}:{director_port}'
         options = [('grpc.max_message_length', 100 * 1024 * 1024)]
         if not tls:

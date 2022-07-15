@@ -81,6 +81,7 @@ class AggregatorGRPCServer(aggregator_pb2_grpc.AggregatorServicer):
             common_name = context.auth_context()[
                 'x509_common_name'][0].decode('utf-8')
             collaborator_common_name = request.header.sender
+            import pdb;pdb.set_trace()
             if not self.aggregator.valid_collaborator_cn_and_id(
                     common_name, collaborator_common_name):
                 raise ValueError(

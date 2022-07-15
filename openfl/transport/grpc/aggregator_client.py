@@ -102,7 +102,11 @@ class AggregatorGRPCClient:
                  single_col_cert_common_name=None,
                  **kwargs):
         """Initialize."""
-        self.uri = f'{agg_addr}:{agg_port}'
+
+        if agg_addr == 'director1.fed-learning.org':
+            self.uri = f'{agg_addr}:80'
+        else:
+            self.uri = f'{agg_addr}:{agg_port}'
         self.tls = tls
         self.disable_client_auth = disable_client_auth
         self.root_certificate = root_certificate

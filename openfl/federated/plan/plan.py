@@ -247,13 +247,15 @@ class Plan:
         if self.config['network'][SETTINGS]['agg_addr'] == AUTO:
             self.config['network'][SETTINGS]['agg_addr'] = getfqdn_env()
 
-        if "FL_PUBLIC_PORTS" in os.environ.keys() and os.environ["FL_PUBLIC_PORTS"]:
-            self.config['network'][SETTINGS]['agg_port'] = 80
-        else:
-            if self.config['network'][SETTINGS]['agg_port'] == AUTO:
-                self.config['network'][SETTINGS]['agg_port'] = int(
-                    self.hash[:8], 16
-                ) % (60999 - 49152) + 49152
+        # agg_port = os.environ.get('FL_AGG_PORT', int(self.hash[:8], 16) % (60999 - 49152) + 49152)
+        self.config['network'][SETTINGS]['agg_port'] = 60051 # agg_port
+        # if "FL_PUBLIC_PORTS" in os.environ.keys() and os.environ["FL_PUBLIC_PORTS"]:
+        #     self.config['network'][SETTINGS]['agg_port'] = 80
+        # else:
+        #     if self.config['network'][SETTINGS]['agg_port'] == AUTO:
+        #         self.config['network'][SETTINGS]['agg_port'] = int(
+        #             self.hash[:8], 16
+        #         ) % (60999 - 49152) + 49152
 
     def get_assigner(self):
         """Get the plan task assigner."""

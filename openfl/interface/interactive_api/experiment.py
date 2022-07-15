@@ -194,6 +194,7 @@ class FLExperiment:
         pip_install_options - tuple of options for the remote `pip install` calls,
             example: ('-f some.website', '--no-index')
         """
+        print("STARTING")
         if not task_assigner:
             task_assigner = self.define_task_assigner(task_keeper, rounds_to_train)
 
@@ -354,6 +355,7 @@ class FLExperiment:
         # We just choose a port randomly from plan hash
         director_fqdn = self.federation.director_node_fqdn.split(':')[0]  # We drop the port
         plan.config['network']['settings']['agg_addr'] = director_fqdn
+        plan.config['network']['settings']['agg_port'] = 80
         plan.config['network']['settings']['tls'] = self.federation.tls
 
         # Aggregator part of the plan
