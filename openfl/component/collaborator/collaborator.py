@@ -280,6 +280,7 @@ class Collaborator:
         """Get tensor dictionary for specified tensorkey set."""
         return {k.tensor_name: self.get_data_for_tensorkey(k) for k in tensor_keys}
 
+
     def get_data_for_tensorkey(self, tensor_key):
         """
         Resolve the tensor corresponding to the requested tensorkey.
@@ -354,6 +355,7 @@ class Collaborator:
                     tensor_key,
                     require_lossless=True
                 )
+
         else:
             self.logger.debug(f'Found tensor {tensor_key} in local TensorDB')
 

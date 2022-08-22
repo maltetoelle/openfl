@@ -417,6 +417,10 @@ class Plan:
         self.runner_.set_model_provider(model_provider)
         self.runner_.set_task_provider(task_keeper)
 
+        if self.runner_.data_loader is not None \
+            and hasattr(self.runner_.data_loader.shard_descriptor, 'epsilon'):
+            self.runner_.make_private(self.rounds_to_train)
+
         framework_adapter = Plan.build(
             self.config['task_runner']['required_plugin_components']['framework_adapters'], {})
 

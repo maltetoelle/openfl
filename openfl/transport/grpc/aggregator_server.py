@@ -88,14 +88,15 @@ class AggregatorGRPCServer(aggregator_pb2_grpc.AggregatorServicer):
                        f'Invalid collaborator. CN: |{common_name}| '
                        f'collaborator_common_name: |{collaborator_common_name}|')
             except:
-                import subprocess
-                command = f'step certificate verify ~/certs/{collaborator_common_name}.crt --roots ~/certs/root_ca.crt'
-                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                out, err = process.communicate()
-                if len(err):
-                    raise ValueError(
-                        f'Invalid collaborator. CN: |{common_name}| '
-                        f'collaborator_common_name: |{collaborator_common_name}|')
+                print("WE MUST STILL HANDLE THE COMMON / COLLABORATOR NAME PROBLEM")
+                # import subprocess
+                # command = f'step certificate verify ~/certs/{collaborator_common_name}.crt --roots ~/certs/root_ca.crt'
+                # process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                # out, err = process.communicate()
+                # if len(err):
+                #     raise ValueError(
+                #         f'Invalid collaborator. CN: |{common_name}| '
+                #         f'collaborator_common_name: |{collaborator_common_name}|')
 
     def get_header(self, collaborator_name):
         """

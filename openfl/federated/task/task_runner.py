@@ -4,6 +4,7 @@
 
 from logging import getLogger
 
+import requests
 import numpy as np
 
 from openfl.utilities import split_tensor_dict_for_holdouts
@@ -73,6 +74,7 @@ class CoreTaskRunner:
         else:
             suffix = 'validate' + validation_flag
             tags = (suffix,)
+        
         tags = ('metric', *tags)
         metric_dict = {
             TensorKey(metric, origin, round_num, True, tags):
@@ -130,6 +132,15 @@ class CoreTaskRunner:
 
                 # Here is the training metod call
                 metric_dict = callable_task(**task_kwargs)
+                
+                if self.privacy_engine is not None:
+                    epsilon_spent = self.privacy_engine.get_epsilon(self.data_loader.shard_descriptor.delta)
+                    self.logger.info(f'Epsilon spent: {epsilon_spent}')
+                    metric_dict['epsilon_spent'] = epsilon_spent
+
+                    sd = self.data_loader.shard_descriptor
+                    msg = {'training_id': sd.training_id, 'dataset_id': sd.dataset_id, 'epsilon_spent': epsilon_spent}
+                    resp = requests.post('https://director.fed-learning.org/report-epsilon-spent', json=msg)
 
                 return self._prepare_tensorkeys_for_agggregation(
                     metric_dict, validation_flag, col_name, round_num)
@@ -167,6 +178,8 @@ class CoreTaskRunner:
             'holdout_tensor_names': ['__opt_state_needed']
         })
 
+        self.privacy_engine = None
+
     def set_task_provider(self, task_provider):
         """
         Set task registry.
@@ -189,7 +202,37 @@ class CoreTaskRunner:
         self.model_provider = model_provider
         self.model = self.model_provider.provide_model()
         self.optimizer = self.model_provider.provide_optimizer()
+    
+    def make_private(self, rounds_to_train):
+        if self.privacy_engine is None:
+            from opacus import PrivacyEngine
+            self.privacy_engine = PrivacyEngine()
+            
+            shard_descriptor = self.data_loader.shard_descriptor
+            ds = shard_descriptor.get_dataset()
+            
+            epsilon = shard_descriptor.epsilon
+            delta = shard_descriptor.delta if hasattr(shard_descriptor, 'delta') else 1 / len(ds)
+            max_grad_norm = shard_descriptor.delta if hasattr(shard_descriptor, 'max_grad_norm') else 5
 
+            self.dp_params = {
+                'target_epsilon': epsilon,
+                'target_delta': delta,
+                'max_grad_norm': max_grad_norm
+            }
+
+            delta = 1 / len(self.data_loader.shard_descriptor.get_dataset())
+            model, self.optimizer, priv_data_loader = self.privacy_engine.make_private_with_epsilon(
+                module=self.model,
+                optimizer=self.optimizer,
+                data_loader=self.data_loader.get_train_loader(),
+                epochs=rounds_to_train,
+                target_epsilon=epsilon,
+                target_delta=delta,
+                max_grad_norm=max_grad_norm
+            )
+            self.data_loader.get_train_loader = lambda: priv_data_loader
+                
     def set_framework_adapter(self, framework_adapter):
         """
         Set framework adapter.
