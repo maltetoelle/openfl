@@ -84,7 +84,8 @@ class ShardDirectorClient:
         response = next(response_iter)
         experiment_name = response.experiment_name
         if not experiment_name:
-            raise Exception('No experiment')
+            import pdb;pdb.set_trace()
+            # raise Exception('No experiment')
 
         return experiment_name
 
